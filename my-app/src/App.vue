@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style lang="less" scope>
-html,body,h3{
+html,body,h3,p{
   padding: 0px;
   margin: 0px;
 }
