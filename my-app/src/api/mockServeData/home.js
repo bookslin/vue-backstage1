@@ -1,6 +1,9 @@
 // mock数据模拟
 import Mock from 'mockjs'
+<<<<<<< HEAD
 
+=======
+>>>>>>> 207ada6 (test)
 // 图表数据
 let List = []
 export default {
