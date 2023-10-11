@@ -23,7 +23,7 @@
     </el-col>
     <el-col :span="16">
       <div class="num">
-        <el-card v-for="item in countData" key="item.name" :body-style="{display:'flex',padding:0}">
+        <el-card v-for="item in countData" :key="item.name" :body-style="{display:'flex',padding:0}">
           <i class="icon" :class="`el-icon-${item.icon}`" :style="{background:item.color}"></i>
           <div class="detail">
             <p class="price">￥{{ item.value }}</p>
@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {getData} from '../api'
 export default {
   data() {
     return {
@@ -122,6 +123,11 @@ export default {
         },
       ],
     }
+  },
+  mounted() {
+    getData().then((data) => {
+      console.log(data)
+    })
   }
 }
 </script>
