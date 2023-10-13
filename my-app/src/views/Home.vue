@@ -1,9 +1,9 @@
 <template>
   <el-row>
-    <el-col :span="8">
+    <el-col :span="8" style="padding-right: 10px;">
       <el-card class="box-card">
         <div class="user">
-          <img src="../assets/images/user.png" alt="">
+          <img src="../assets/images/myuser.png" alt="">
 
           <div class="userinfo">
             <p class="name">Admin</p>
@@ -17,74 +17,84 @@
       </el-card>
       <el-card style="margin-top: 20px;height: 460px;">
         <el-table :data="tableData" style="width: 100%">
-          <el-table-column v-for="(val,key) in tablelabel" :prop="key" :label="val" />
+          <el-table-column v-for="(val, key) in tablelabel" :prop="key" :label="val" />
         </el-table>
       </el-card>
     </el-col>
-    <el-col :span="16">
+    <el-col :span="16" style="padding-left: 10px;">
       <div class="num">
-        <el-card v-for="item in countData" :key="item.name" :body-style="{display:'flex',padding:0}">
-          <i class="icon" :class="`el-icon-${item.icon}`" :style="{background:item.color}"></i>
+        <el-card v-for="item in countData" :key="item.name" :body-style="{ display: 'flex', padding: 0 }">
+          <i class="icon" :class="`el-icon-${item.icon}`" :style="{ background: item.color }"></i>
           <div class="detail">
             <p class="price">￥{{ item.value }}</p>
             <p class="desc">{{ item.name }}</p>
           </div>
         </el-card>
       </div>
+      <el-card style="height: 280px;">
+        <!-- 折线图 -->
+        <div ref="echars1" style="height: 280px;"></div>
+      </el-card>
+      <div class="graph">
+        <el-card style="height: 260px;"></el-card>
+        <el-card style="height: 260px;"></el-card>
+      </div>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import {getData} from '../api'
+import { Value } from 'sass'
+import { getData } from '../api'
+import * as echarts from 'echarts'
 export default {
   data() {
     return {
       tableData: [
-          {
-            name: 'oppo',
-            todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          },
-          {
-            name: 'vivo',
-            todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          },
-          {
-            name: '苹果',
-            todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          },
-          {
-            name: '小米',
-            todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          },
-          {
-            name: '三星',
-            todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          },
-          {
-            name: '魅族',
-           todayBuy: 100,
-            monthBuy: 300,
-            totalBuy: 800
-          }
-        ],
-        tablelabel: {
-          name:'课程',
-          todayBuy:'今日购买',
-          monthBuy:'本月购买',
-          totalBuy:'总购买'
+        {
+          name: 'oppo',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
         },
-        countData: [
+        {
+          name: 'vivo',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
+        },
+        {
+          name: '苹果',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
+        },
+        {
+          name: '小米',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
+        },
+        {
+          name: '三星',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
+        },
+        {
+          name: '魅族',
+          todayBuy: 100,
+          monthBuy: 300,
+          totalBuy: 800
+        }
+      ],
+      tablelabel: {
+        name: '课程',
+        todayBuy: '今日购买',
+        monthBuy: '本月购买',
+        totalBuy: '总购买'
+      },
+      countData: [
         {
           name: "今日支付订单",
           value: 1234,
@@ -125,9 +135,39 @@ export default {
     }
   },
   mounted() {
-    getData().then((data) => {
-      console.log(data)
+    getData().then(({ data }) => {
+      const { tableData } = data.data
+      // console.log('data.data', data.data);
+      this.tableData = tableData
+      // console.log('tableData', tableData)
+      // 基于准备好的dom，初始化echarts实例
+      const echars1 = echarts.init(this.$refs.echars1)
+      // 指定图表的配置项和数据
+      var echars1Option = {}
+      //处理数据xAxis
+      const { orderData } = data.data
+      const xAxis = Object.keys(orderData.data[0])
+      const xAxisData = {
+        data: xAxis
+      }
+      echars1Option.xAxis = xAxisData
+      echars1Option.yAxis = {}
+      echars1Option.legend = xAxisData
+      // console.log('xAxis', xAxis);
+      echars1Option.series = []
+      xAxis.forEach(key => {
+        echars1Option.series.push({
+          name: key,
+          data: orderData.data.map(item => item[key]),
+          type: 'line'
+        })
+      })
+      // console.log(echars1Option);
+      // 使用刚指定的配置项和数据显示图表。
+      echars1.setOption(echars1Option);
+
     })
+
   }
 }
 </script>
@@ -144,6 +184,7 @@ export default {
     margin-right: 40px;
     width: 150px;
     height: 150px;
+    border: 1px solid #999;
     border-radius: 50%;
   }
 }
@@ -171,34 +212,40 @@ export default {
     }
   }
 }
-.num{
+
+.num {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  .el-card{
+
+  .el-card {
     width: 32%;
     margin-bottom: 20px;
   }
-  .icon{
-    width: 80px; 
+
+  .icon {
+    width: 80px;
     height: 80px;
     font-size: 30px;
     text-align: center;
     line-height: 80px;
     color: #fff;
   }
-  .detail{
+
+  .detail {
     margin-left: 15px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    .price{
+
+    .price {
       font-size: 30px;
       margin-bottom: 10px;
       line-height: 30px;
       height: 30px;
     }
-    .desc{
+
+    .desc {
       font-size: 14px;
       color: #999;
       text-align: center;
@@ -206,4 +253,13 @@ export default {
     }
   }
 }
-</style>
+
+.graph {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+
+  .el-card {
+    width: 48%;
+  }
+}</style>
