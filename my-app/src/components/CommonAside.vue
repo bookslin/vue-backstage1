@@ -98,7 +98,10 @@ export default {
             console.log(key, keyPath);
         },
         clickMenu(item) {
-            if (this.$route.path !== item.path && !(this.$route.path === '/home' && (item.path === '/'))) { this.$router.push(item.path) }
+            if (this.$route.path !== item.path && !(this.$route.path === '/home' && (item.path === '/'))) { 
+                this.$router.push(item.path)
+            }
+            this.$store.commit('selectMenu',item) 
         }
     },
     computed: {
