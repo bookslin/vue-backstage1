@@ -38,10 +38,14 @@ export default {
             this.$refs.form.validate((valid) =>{
                 if(valid) {
                     getMenu(this.form).then(({data}) =>{
-                        console.log(data);
+                        console.log('getMenu',data);
                         if (data.code === 20000) {
                             //token信息存入cookie用于不同页面间的通信
                             Cookie.set('token', data.data.token)
+
+                            //获取菜单的数据，存入store
+                            this.$store.commit('setMenu',data.data.menu)
+                            this.$store.commit('addMenu',this.$router)
                             //跳转到首页
                             this.$router.push('/home')
                         }else{

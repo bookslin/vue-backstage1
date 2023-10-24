@@ -34,8 +34,9 @@ import Cookie from 'js-cookie'
             },
             logout() {
                 //清楚token
-                console.log('token');
                 Cookie.remove('token')
+                 //清楚token
+                 Cookie.remove('menu')
                 //跳转到login页面
                 this.$router.push('login')
             }
